@@ -1,7 +1,9 @@
 'use strict'
 
-const gps = require("gps-tracking");
+const gps = require('gps-tracking')
+const chalk = require('chalk')
 const tk303g = require('./adapters/tk303g')
+
 const options = {
     'debug': true,
     'port': process.env.PORT || 9000,
@@ -9,17 +11,18 @@ const options = {
 }
 
 const server = gps.server(options, (device, connection) => {
-    device.on("login_request", (device_id, msg_parts) => {
-      device.authorize()
+    device.on('connected', data => {
+        // TODO validations before accept device
+        console.log(chalk.green('New device connected'))
     })
-
-    device.on('heartbeat', (id, data) => {
-        console.log(id, data)
+    
+    device.on('login_request', (id, data) => {
+        device.login_authorized(true)
     })
 
     //PING -> When the gps sends their position  
-    device.on("ping", data => {
-        //After the ping is received, but before the data is saved
-        console.log(data);
+    device.on('ping', (data) => {
+        console.log(data)
+        return data
     })
 })

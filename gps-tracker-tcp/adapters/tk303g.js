@@ -1,43 +1,59 @@
+'use strict'
+const chalk = require('chalk')
+
 const protocol = 'GPSTK303g'
 const model_name= 'TK303g'
 const compatible_hardware = ["TK303g/supplier"]
 
 const adapter = function (device) {
     if(!(this instanceof adapter)) return new adapter(device)
+    this.device = device
     
     //Code that parses and respond to commands
     this.parse_data =  function (data) {
       data = data.toString()
-      tokens = data.split(',')
-      const parsedData = {}
+      console.log(chalk.yellow(data))
+      const tokens = data.split(',')
 
-      if (data.includes('##')) {
+      const parts = {
+        device_id: tokens[1] ? tokens[1].split(':')[1] : tokens[0],
+        cmd: 'A',
+        data
+      }
+      
+      if (tokens.includes('##')) {
         // is the first message
         // ##,imei:359586015829802,A;
-        parsedData.device_id = tokens[1].split(':')[1]
-        parsedData.cmd = 'login_request'
-        parsedData.data = data
-      } else if (tokens.length == 1) {
-        // is the second message
-        // 359586015829802
-        parsedData.device_id = tokens[1].split(':')[1]
-        parsedData.cmd = 'heartbeat'
-        parsedData.data = data
+        parts.action = 'login_request'
+      } else if (tokens.length === 1 ) {
+        parts.action = 'other'
       } else {
-        parsedData.device_id = tokens[1].split(':')[1]
-        parsedData.cmd = 'ping'
-        parsedData.data = data
+        console.log('holi')
+        parts.action = 'ping'
       }
+      console.log(parts)
+      return parts
     }
-
-    // Login device
+    // Authorize the device
     this.authorize = function () {
       this.device.send('LOAD')
     }
 
-    // Start initialize traking
-    this.initialize = function () {
-      this.device.send('ON')
+    // Run others commnds
+    this.run_other = function (cmd, msg_parts) {
+      switch (cmd) {
+        case 'A':
+          this.device.send('ON')
+          break
+      }
+    }
+
+    this.send_commad = function () {
+
+    }
+
+    this.get_ping_data = function (msg_parts) {
+      return msg_parts.data
     }
 
 }

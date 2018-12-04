@@ -1,0 +1,11 @@
+{
+  "name": "gps-tracker-client",
+  "version": "1.0.0",
+  "description": "A client for GPS tracker platform",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "author": "Juan Diego López",
+  "license": "ISC"
+}
