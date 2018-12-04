@@ -1,0 +1,19 @@
+{
+  "name": "gps-tracker-tcp",
+  "version": "1.0.0",
+  "description": "A TCP server for gps tracker",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "lint": "standard",
+    "lint:fix": "standard --fix"
+  },
+  "author": "Juan Diego López & Ruben Oswaldo Duarte",
+  "license": "ISC",
+  "dependencies": {
+    "gps-tracking": "^1.1.1"
+  },
+  "devDependencies": {
+    "standard": "^12.0.1"
+  }
+}
