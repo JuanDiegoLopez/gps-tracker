@@ -13,7 +13,7 @@
   "license": "ISC",
   "dependencies": {
     "chalk": "^2.4.1",
-    "gps-tracking": "^1.1.1"
+    "node.extend": "^2.0.2"
   },
   "devDependencies": {
     "nodemon": "^1.18.7",

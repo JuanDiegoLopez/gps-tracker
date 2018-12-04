@@ -1,13 +1,12 @@
 'use strict'
 
-const gps = require('gps-tracking')
+const gps = require('./lib')
 const chalk = require('chalk')
-const tk303g = require('./adapters/tk303g')
 
 const options = {
     'debug': true,
     'port': process.env.PORT || 9000,
-    'device_adapter': tk303g
+    'device_adapter': "TK303G"
 }
 
 const server = gps.server(options, (device, connection) => {
@@ -20,9 +19,16 @@ const server = gps.server(options, (device, connection) => {
         device.login_authorized(true)
     })
 
+    device.on('start_comunication', (id, data) => {
+        //
+    })
+
     //PING -> When the gps sends their position  
-    device.on('ping', (data) => {
-        console.log(data)
-        return data
+    device.on('ping', (gpsData, msgParts) => {
     })
 })
+
+setTimeout(() => {
+    const device = server.find_device('359586015829802')
+    device.send('**imei:359586015829802,111')
+}, 10000)

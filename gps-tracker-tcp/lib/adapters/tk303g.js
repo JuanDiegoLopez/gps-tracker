@@ -16,22 +16,29 @@ const adapter = function (device) {
       const tokens = data.split(',')
 
       const parts = {
-        device_id: tokens[1] ? tokens[1].split(':')[1] : tokens[0],
         data
       }
       
       if (tokens.includes('##')) {
         // is the first message
         // ##,imei:359586015829802,A;
+        parts.device_id = tokens[1].split(':')[1]
         parts.action = 'login_request'
         parts.cmd = 'login_request'
       } else if (tokens.length === 1 ) {
-        parts.cmd = 'login'
-        parts.action = 'other'
-      } else {
+        parts.device_id = tokens[0]
+        parts.cmd = 'start_comunication'
+        parts.action = 'start_comunication'
+      } else if (tokens[1] == 'tracker') {
+        parts.device_id = tokens[0].split(':')[1]
         parts.action = 'ping'
         parts.cmd = 'tracker'
+      } else {
+        parts.device_id = tokens[0].split(':')[1]
+        parts.action = 'other'
+        parts.cmd = tokens[1]
       }
+  
       return parts
     }
     // Authorize the device
@@ -39,25 +46,22 @@ const adapter = function (device) {
       this.device.send('LOAD')
     }
 
+    this.start_comunication = function () {
+      this.device.send('ON')
+    }
+
     // Run others commnds
-    this.run_other = function (cmd, msg_parts) {
-      switch (cmd) {
-        case 'login':
-          this.device.send('ON')
-          break
-
-        case 'arm':
-          this.device.send('')
-          break
-      }
+    this.run_other = function (cmd, id) {
+      this.send_commad(id, cmd)
     }
 
-    this.send_commad = function () {
-
+    this.send_commad = function (id, cmd) {
+      const message = `**imei:${id},${cmd}`
+      this.device.send(message)
     }
 
-    this.get_ping_data = function (msg_parts) {
-      const str = msg_parts.data
+    this.get_ping_data = function (msgParts) {
+      const str = msgParts.data
       const tokens = str.split(',')
 
       const data = {
