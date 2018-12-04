@@ -19,11 +19,10 @@ client.on('data', data => {
 		client.write('359586015829802')
 		//return
 	} else if (data == 'ON') {
-		console.log('holi')
 		client.write('imei:359587010124900,tracker,0809231929,13554900601,F,112909.397,A,2234.4669,N,11354.3287,E,0.11,;')
 		//return	
 	} else {
-		 client.destroy() // kill client after server's response
+		client.destroy() // kill client after server's response
 	}
 })
 

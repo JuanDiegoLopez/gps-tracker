@@ -17,7 +17,6 @@ const adapter = function (device) {
 
       const parts = {
         device_id: tokens[1] ? tokens[1].split(':')[1] : tokens[0],
-        cmd: 'A',
         data
       }
       
@@ -25,13 +24,14 @@ const adapter = function (device) {
         // is the first message
         // ##,imei:359586015829802,A;
         parts.action = 'login_request'
+        parts.cmd = 'login_request'
       } else if (tokens.length === 1 ) {
+        parts.cmd = 'login'
         parts.action = 'other'
       } else {
-        console.log('holi')
         parts.action = 'ping'
+        parts.cmd = 'tracker'
       }
-      console.log(parts)
       return parts
     }
     // Authorize the device
@@ -42,8 +42,12 @@ const adapter = function (device) {
     // Run others commnds
     this.run_other = function (cmd, msg_parts) {
       switch (cmd) {
-        case 'A':
+        case 'login':
           this.device.send('ON')
+          break
+
+        case 'arm':
+          this.device.send('')
           break
       }
     }
@@ -53,7 +57,20 @@ const adapter = function (device) {
     }
 
     this.get_ping_data = function (msg_parts) {
-      return msg_parts.data
+      const str = msg_parts.data
+      const tokens = str.split(',')
+
+      const data = {
+        latitude: tokens[7],
+        longitude: tokens[9],
+        date: tokens[2],
+        phone: tokens[3],
+        signalGPS: tokens[4] == 'F' ? true : false,
+        time: tokens[5],
+        speed: tokens[11]
+      }
+
+      return data
     }
 
 }
