@@ -68,8 +68,8 @@ function Device(adapter, connection, gpsServer) {
       case 'login_request':
         _this.login_request(msgParts);
         break;
-      case 'start_comunication':
-        _this.start_comunication(msgParts);
+      case 'keep_alive':
+        _this.keep_alive(msgParts);
         break;
       case 'ping':
         _this.ping(msgParts);
@@ -87,23 +87,23 @@ function Device(adapter, connection, gpsServer) {
    LOGIN & LOGOUT
    ****************************************/
   this.login_request = function (msgParts) {
-    _this.do_log('I\'m requesting to be loged.');
+    _this.do_log(chalk.blue('New request to login'));
     _this.emit('login_request', this.getUID(), msgParts);
   };
 
-  this.start_comunication = function (msgParts) {
-    _this.do_log('Comunication is started')
-    this.adapter.start_comunication()
-    _this.emit('start_comunication', this.getUID(), msgParts)
+  this.keep_alive = function (msgParts) {
+    _this.do_log(chalk.green('Device is online'))
+    this.adapter.keep_alive()
+    _this.emit('keep_alive', this.getUID(), msgParts)
   }
 
   this.login_authorized = function (val, msgParts) {
     if (val) {
-      this.do_log('Device ' + _this.getUID() + ' has been authorized. Welcome!');
+      this.do_log(chalk.green('Device has been authorized'));
       this.loged = true;
       this.adapter.authorize(msgParts);
     } else {
-      this.do_log('Device ' + _this.getUID() + ' not authorized. Login request rejected');
+      this.do_log(chalk.red('Device not authorized. Login request rejected'));
     }
   };
 
@@ -128,7 +128,7 @@ function Device(adapter, connection, gpsServer) {
      Optionals:
      orientation, speed, mileage, etc */
 
-    _this.do_log('Position received ( ' + gpsData.latitude + ',' + gpsData.longitude + ' )');
+    _this.do_log('Location received (' + gpsData.latitude + ', ' + gpsData.longitude + ')');
     gpsData.from_cmd = msgParts.cmd;
     _this.emit('ping', gpsData, msgParts);
 
@@ -162,7 +162,7 @@ function Device(adapter, connection, gpsServer) {
   this.send = function (msg) {
     this.emit('send_data', msg);
     this.connection.write(msg);
-    this.do_log('Sending to ' + _this.getUID() + ': ' + msg);
+    this.do_log(chalk.magenta('Sending message: ') + msg + '\n');
   };
 
   this.do_log = function (msg) {

@@ -1,0 +1,23 @@
+{
+  "name": "gps-tracker-api",
+  "version": "1.0.0",
+  "description": "A GPS web server api",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "nodemon server.js",
+    "lint": "standard",
+    "lint:fix": "standard --fix"
+  },
+  "author": "Juan Diego López",
+  "license": "ISC",
+  "dependencies": {
+    "body-parser": "^1.18.3",
+    "chalk": "^2.4.1",
+    "express": "^4.16.4"
+  },
+  "devDependencies": {
+    "nodemon": "^1.18.7",
+    "standard": "^12.0.1"
+  }
+}

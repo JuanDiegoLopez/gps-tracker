@@ -1,9 +1,10 @@
-util = require('util');
-EventEmitter = require('events').EventEmitter;
-net = require('net');
-extend = require('node.extend');
-functions = require('./functions');
-Device = require('./device');
+const util = require('util');
+const chalk = require('chalk');
+const EventEmitter = require('events').EventEmitter;
+const net = require('net');
+const extend = require('node.extend');
+const functions = require('./functions');
+const Device = require('./device');
 
 util.inherits(Server, EventEmitter);
 
@@ -85,7 +86,7 @@ function Server(opts, callback) {
     _this.emit('init');
 
     /* FINAL INIT MESSAGE */
-    console.log('\n=================================================\nGPS LISTENER running at port ' + _this.opts.port + '\nEXPECTING DEVICE MODEL:  ' + _this.getAdapter().model_name + '\n=================================================\n');
+    console.log(chalk.cyan('\n=================================================\nGPS LISTENER running at port ' + _this.opts.port + '\nEXPECTING DEVICE MODEL:  ' + _this.getAdapter().model_name + '\n=================================================\n'));
   };
 
   this.addAdaptar = function (model, Obj) {
@@ -140,11 +141,58 @@ function Server(opts, callback) {
         connection.device.emit('disconnected');
       });
 
+      connection.on('error', function (error) {
+        console.log(chalk.red('Error: ') + error)
+      })
+
+      connection.on('close', function () {
+        _this.devices.splice(_this.devices.indexOf(connection), 1);
+        console.log(chalk.red('Device disconnected \n'));
+      })
+
       callback(connection.device, connection);
 
       connection.device.emit('connected');
     }).listen(opts.port);
   });
+
+  /*Lisen http server */
+  this.listen_http_server = function (port, host) {
+    if ((host == 'localhost' || host == '127.0.0.1') && port == opts.port) {
+      console.log(chalk.red('HTTP listen port cant be the same as TCP server port in localhost'))
+      return
+    }
+
+    console.log(chalk.green('TCP server to listen HTTP server created successful \n'))
+    const server = net.createServer(connection => {
+
+      connection.on('data', data => {
+        console.log(chalk.magenta('New data from http server: ') + data + '\n')
+        data = JSON.parse(data)
+        if (data.cmd == 'arm') {
+          this.send_to(data.imei, `**,imei:${imei},111`)
+        }
+      })
+
+      connection.on('end', () => {
+        console.log(chalk.red('HTTP server disconnected'))
+      })
+
+      connection.on('error', (error) => {
+        console.log(chalk.red('Error: ') + error)
+      })
+
+      connection.on('close', () => {
+        console.log(chalk.red('HTTP server disconected \n'))
+      })
+    })
+
+    server.on('connection', socket => {
+      console.log(chalk.green('HTTP server connected'))
+    })
+
+    server.listen(port, host)
+  }
 
   /* Search a device by ID */
   this.find_device = function (deviceId) {

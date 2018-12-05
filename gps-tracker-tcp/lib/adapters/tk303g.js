@@ -12,7 +12,7 @@ const adapter = function (device) {
     //Code that parses and respond to commands
     this.parse_data =  function (data) {
       data = data.toString()
-      console.log(chalk.yellow(data))
+      console.log(chalk.yellow('Incoming message: ') + data)
       const tokens = data.split(',')
 
       const parts = {
@@ -27,8 +27,8 @@ const adapter = function (device) {
         parts.cmd = 'login_request'
       } else if (tokens.length === 1 ) {
         parts.device_id = tokens[0]
-        parts.cmd = 'start_comunication'
-        parts.action = 'start_comunication'
+        parts.cmd = 'keep_alive'
+        parts.action = 'keep_alive'
       } else if (tokens[1] == 'tracker') {
         parts.device_id = tokens[0].split(':')[1]
         parts.action = 'ping'
@@ -46,7 +46,7 @@ const adapter = function (device) {
       this.device.send('LOAD')
     }
 
-    this.start_comunication = function () {
+    this.keep_alive = function () {
       this.device.send('ON')
     }
 
