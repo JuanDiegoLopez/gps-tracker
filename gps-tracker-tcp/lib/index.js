@@ -169,7 +169,7 @@ function Server(opts, callback) {
       connection.on('data', data => {
         console.log(chalk.magenta('New data from http server: ') + data + '\n')
         data = JSON.parse(data)
-        if (data.type) {
+        if (data.cmd) {
           this.send_to(data.imei, `**,imei:${data.imei},${data.cmd}`)
         }
       })
@@ -208,7 +208,8 @@ function Server(opts, callback) {
 
   /* SEND A MESSAGE TO DEVICE ID X */
   this.send_to = function (deviceId, msg) {
-    var dev = this.find_device(deviceId);
+    const dev = this.find_device(deviceId);
+    if (!dev) return console.log('Device not found') 
     dev.send(msg);
   };
 
