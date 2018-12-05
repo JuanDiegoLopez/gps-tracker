@@ -15,7 +15,7 @@ const tcpHost = process.env.TCP_HOST || 'localhost'
 app.use(bodyParser.urlencoded({ extended: true }))
 app.use(bodyParser.json())
 
-app.post('/sendMessage', (req, res, next) => {
+app.post('/sendCommand', (req, res, next) => {
   console.log(`${chalk.green('POST')} /sendMessage`)
   const message  = req.body
   tcpClient.write(JSON.stringify(message))

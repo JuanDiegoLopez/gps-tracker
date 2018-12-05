@@ -169,9 +169,7 @@ function Server(opts, callback) {
       connection.on('data', data => {
         console.log(chalk.magenta('New data from http server: ') + data + '\n')
         data = JSON.parse(data)
-        if (data.cmd == 'arm') {
-          this.send_to(data.imei, `**,imei:${data.imei},111`)
-        }
+        this.send_to(data.imei, `**,imei:${data.imei},${data.cmd}`)
       })
 
       connection.on('end', () => {
