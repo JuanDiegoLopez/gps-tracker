@@ -16,6 +16,7 @@ app.use(bodyParser.urlencoded({ extended: true }))
 app.use(bodyParser.json())
 
 app.post('/sendMessage', (req, res, next) => {
+  console.log(`${chalk.green('POST')} /sendMessage`)
   const message  = req.body
   tcpClient.write(JSON.stringify(message))
   res.send('message sent')
